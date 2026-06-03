@@ -11,17 +11,9 @@ from rich.panel import Panel
 from rich.rule import Rule
 from rich.text import Text
 
-ORANGE = "#d4845c"
-DIM = "#737373"
+from wire0.logo import ORANGE, logo_text
 
-LOGO = Text("\n").join(
-    [
-        Text("  ▀█▀  ", style=f"bold {ORANGE}"),
-        Text("   █   ", style=f"bold {ORANGE}"),
-        Text("  ▄█▄  ", style=f"bold {ORANGE}"),
-        Text(" ●───● ", style=f"bold {ORANGE}"),
-    ]
-)
+DIM = "#737373"
 
 
 def show_welcome(console: Console, version: str, model: str, cwd: Path) -> None:
@@ -29,12 +21,12 @@ def show_welcome(console: Console, version: str, model: str, cwd: Path) -> None:
     info.append(f"{model}\n", style=DIM)
     info.append(str(cwd), style=DIM)
 
-    body = Group(Align.center(LOGO), Align.center(info))
+    body = Group(Align.center(logo_text()), Align.center(info))
     console.print()
     console.print(
         Panel(
             body,
-            title=f"[bold {ORANGE}]Wire0[/]  [dim]v{version}[/dim]",
+            title=f"[dim]v{version}[/dim]",
             border_style=ORANGE,
             padding=(1, 3),
             width=min(max(console.width - 4, 52), 68),
@@ -45,7 +37,7 @@ def show_welcome(console: Console, version: str, model: str, cwd: Path) -> None:
 
 def footer(console: Console) -> None:
     console.print(Rule(style=DIM))
-    console.print(f"[dim]/key · /model · /clear · /exit[/dim]")
+    console.print(f"[dim]/key · /model · /context · /clear · /exit[/dim]")
 
 
 def key_prompt_html() -> str:

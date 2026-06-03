@@ -16,6 +16,7 @@ from rich.console import Console
 
 from wire0 import __version__
 from wire0.config import get_api_key, get_model, mask_key, set_api_key, set_model
+from wire0.context import clear_model_cache, fetch_context_info
 from wire0.llm import chat
 from wire0.spinner import Indicator
 from wire0.tools import set_root
@@ -25,7 +26,7 @@ try:
 except ImportError:
     _tui = None  # type: ignore[assignment]
 
-ORANGE = "#d4845c"
+from wire0.logo import ORANGE, logo_text
 
 
 class UI:
@@ -143,6 +144,39 @@ class UI:
             self.console.print("[yellow]no api key[/yellow]  [dim]/key[/dim]")
         return self._prompt_key(tui=tui)
 
+    def _show_context(self) -> None:
+        if not self._ensure_key():
+            return
+
+        self.console.print("[dim]context[/dim]  fetching from OpenRouter…")
+        try:
+            info = fetch_context_info(self.model, self.messages, self.session_id)
+        except Exception as e:
+            self._error(str(e))
+            return
+
+        title = info.model_name or info.model
+        self.console.print(f"[dim]context[/dim]  [bold]{title}[/bold]")
+        self.console.print(f"  [dim]{info.model}[/dim]")
+
+        if info.context_limit:
+            ratio = info.fill_ratio or 0
+            width = 24
+            filled = int(ratio * width)
+            bar = f"[{ORANGE}]{'█' * filled}[/][dim]{'░' * (width - filled)}[/]"
+            pct = int(ratio * 100)
+            color = ORANGE if pct < 75 else ("#d4a05c" if pct < 90 else "#c45c5c")
+            self.console.print(
+                f"  {bar}  [{color}]{info.prompt_tokens:,}[/] / {info.context_limit:,}  ({pct}%)"
+            )
+        else:
+            self.console.print(f"  [bold]{info.prompt_tokens:,}[/] [dim]prompt tokens[/dim]")
+            self.console.print("  [dim]context limit unavailable for this model[/dim]")
+
+        if info.cached_tokens:
+            self.console.print(f"  [dim]cached {info.cached_tokens:,} tok[/dim]")
+        self.console.print(f"  [dim]{len(self.messages)} message(s) in session[/dim]")
+
     def run_turn(self, user_text: str) -> None:
         if not self._ensure_key():
             return
@@ -185,9 +219,10 @@ class UI:
             _tui.footer(self.console)
             prompt_html = HTML(_tui.input_prompt_html())
         else:
-            self.console.print(f"[bold]wire0[/] [dim]v{__version__} · {self.model}[/dim]")
+            self.console.print(logo_text())
+            self.console.print(f"[dim]v{__version__} · {self.model}[/dim]")
             self.console.print(f"[dim]{self.cwd}[/dim]")
-            self.console.print("[dim]/key · /model · /clear · /exit[/dim]\n")
+            self.console.print("[dim]/key · /model · /context · /clear · /exit[/dim]\n")
             if not get_api_key():
                 self._ensure_key()
             prompt_html = HTML("<style fg='#6b7280'>❯</style> ")
@@ -218,7 +253,11 @@ class UI:
                 set_model(arg)
                 self.model = get_model()
                 self.session_id = str(uuid.uuid4())
+                clear_model_cache()
                 self.console.print(f"[dim]model[/dim]  {self.model}")
+                continue
+            if text in ("/context", "/ctx"):
+                self._show_context()
                 continue
             self.run_turn(text)
 
