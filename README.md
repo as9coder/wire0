@@ -32,6 +32,8 @@ wire0 --plain            # skip experimental welcome screen
 |-------|--------|
 | `/key` | Prompt for OpenRouter API key (hidden input) |
 | `/key sk-or-...` | Set key inline |
+| `/model` | Show current OpenRouter model id |
+| `/model provider/model` | Switch model (any OpenRouter id, saved to config) |
 | `/clear` | Reset conversation and cache session |
 | `/exit` | Quit |
 | **Ctrl+C** (idle) | Quit with styled farewell |
@@ -44,7 +46,7 @@ Prompt history is stored in `~/.wire0_history`.
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `OPENROUTER_API_KEY` | — | Overrides saved key |
-| `WIRE0_MODEL` | `xiaomi/mimo-v2.5` | OpenRouter model id |
+| `WIRE0_MODEL` | `moonshotai/kimi-k2.6:free` | OpenRouter model id |
 | `WIRE0_CACHE_TTL` | `1h` | Prompt cache TTL (`ephemeral`) |
 | `WIRE0_TUI` | `1` | Set to `0` to disable welcome screen |
 

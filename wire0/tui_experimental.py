@@ -45,7 +45,7 @@ def show_welcome(console: Console, version: str, model: str, cwd: Path) -> None:
 
 def footer(console: Console) -> None:
     console.print(Rule(style=DIM))
-    console.print(f"[dim]/key · /clear · /exit[/dim]")
+    console.print(f"[dim]/key · /model · /clear · /exit[/dim]")
 
 
 def key_prompt_html() -> str:

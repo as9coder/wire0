@@ -11,12 +11,11 @@ from typing import Any, Callable
 import httpx
 
 from wire0.cache import build_request, cache_stats
-from wire0.config import get_api_key
+from wire0.config import DEFAULT_MODEL, get_api_key
 from wire0.tools import SCHEMAS, execute
 from wire0.workspace import context_block
 
 API = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "xiaomi/mimo-v2.5"
 
 SYSTEM = """You are Wire0 — a minimal, highly competent coding agent.
 

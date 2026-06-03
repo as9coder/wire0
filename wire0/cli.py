@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import os
 import signal
 import sys
 import threading
@@ -16,8 +15,8 @@ from prompt_toolkit.formatted_text import HTML
 from rich.console import Console
 
 from wire0 import __version__
-from wire0.config import get_api_key, mask_key, set_api_key
-from wire0.llm import DEFAULT_MODEL, chat
+from wire0.config import get_api_key, get_model, mask_key, set_api_key, set_model
+from wire0.llm import chat
 from wire0.spinner import Indicator
 from wire0.tools import set_root
 
@@ -188,7 +187,7 @@ class UI:
         else:
             self.console.print(f"[bold]wire0[/] [dim]v{__version__} · {self.model}[/dim]")
             self.console.print(f"[dim]{self.cwd}[/dim]")
-            self.console.print("[dim]/key · /clear · /exit[/dim]\n")
+            self.console.print("[dim]/key · /model · /clear · /exit[/dim]\n")
             if not get_api_key():
                 self._ensure_key()
             prompt_html = HTML("<style fg='#6b7280'>❯</style> ")
@@ -211,6 +210,16 @@ class UI:
             if text == "/key" or text.startswith("/key "):
                 self._prompt_key(text[4:].strip() if text.startswith("/key ") else "", tui=use_tui)
                 continue
+            if text == "/model" or text.startswith("/model "):
+                arg = text[6:].strip() if text.startswith("/model ") else ""
+                if not arg:
+                    self.console.print(f"[dim]model[/dim]  {self.model}")
+                    continue
+                set_model(arg)
+                self.model = get_model()
+                self.session_id = str(uuid.uuid4())
+                self.console.print(f"[dim]model[/dim]  {self.model}")
+                continue
             self.run_turn(text)
 
 
@@ -220,7 +229,7 @@ def main() -> None:
     if args and not args[0].startswith("-"):
         cwd = Path(args[0]).resolve()
     set_root(cwd)
-    model = os.environ.get("WIRE0_MODEL", DEFAULT_MODEL)
+    model = get_model()
     UI(model=model, cwd=cwd).repl()
 
 
