@@ -7,7 +7,7 @@ from pathlib import Path
 
 CONFIG_DIR = Path.home() / ".wire0"
 CONFIG_FILE = CONFIG_DIR / "config.json"
-DEFAULT_MODEL = "moonshotai/kimi-k2.6:free"
+DEFAULT_MODEL = "openrouter/owl-alpha"
 
 
 def _load_config() -> dict[str, str]:

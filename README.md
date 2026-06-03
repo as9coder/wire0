@@ -46,7 +46,7 @@ Prompt history is stored in `~/.wire0_history`.
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `OPENROUTER_API_KEY` | — | Overrides saved key |
-| `WIRE0_MODEL` | `moonshotai/kimi-k2.6:free` | OpenRouter model id |
+| `WIRE0_MODEL` | `openrouter/owl-alpha` | OpenRouter model id |
 | `WIRE0_CACHE_TTL` | `1h` | Prompt cache TTL (`ephemeral`) |
 | `WIRE0_TUI` | `1` | Set to `0` to disable welcome screen |
 
