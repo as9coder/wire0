@@ -11,7 +11,14 @@ Wire0 is a small Python REPL that connects an [OpenRouter](https://openrouter.ai
 
 ## Quick start
 
-### Windows (one click)
+### pip (recommended)
+
+```bash
+pip install wire0
+wire0
+```
+
+### Windows (from source)
 
 ```powershell
 git clone https://github.com/as9coder/wire0.git
@@ -19,7 +26,7 @@ cd wire0
 .\setup.bat
 ```
 
-### macOS / Linux
+### macOS / Linux (from source)
 
 ```bash
 git clone https://github.com/as9coder/wire0.git
@@ -27,11 +34,11 @@ cd wire0
 chmod +x setup.sh && ./setup.sh
 ```
 
-### Manual install
+### Manual install from clone
 
 ```bash
 pip install .
-# or from a clone:
+# or editable:
 pip install -e .
 ```
 
@@ -143,6 +150,15 @@ python -m unittest discover -s tests -v
 ```
 
 CI runs tests on Ubuntu and Windows with Python 3.11 and 3.12.
+
+### Publish to PyPI (maintainers)
+
+```powershell
+$env:TWINE_PASSWORD = "pypi-..."   # token from pypi.org/manage/account/token/
+.\publish.ps1
+```
+
+Or add `PYPI_API_TOKEN` to GitHub repo secrets — pushes to `v*` tags auto-publish via `.github/workflows/publish.yml`.
 
 ## Project layout
 

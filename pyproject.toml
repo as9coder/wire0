@@ -1,9 +1,10 @@
 [project]
 name = "wire0"
-version = "0.1.0"
+version = "0.1.1"
 description = "Minimal coding agent CLI — wire your model to the repo"
 readme = "README.md"
 license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 authors = [{ name = "as9coder" }]
 keywords = ["cli", "agent", "openrouter", "coding", "ai"]
