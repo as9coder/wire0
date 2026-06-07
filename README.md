@@ -2,28 +2,55 @@
 
 Minimal coding agent CLI. Wire your model to the repo.
 
-Wire0 is a small Python REPL that connects an OpenRouter model to your workspace with eight tools — file search, read/write/patch, foreground shell, and detached background shells. It streams responses, runs tools in parallel, and caches prompts for long sessions.
+Wire0 is a small Python REPL that connects an [OpenRouter](https://openrouter.ai/) model to your workspace with eight tools — file search, read/write/patch, foreground shell, and detached background shells. It streams responses, runs tools in parallel, and caches prompts for long sessions.
 
 ## Requirements
 
 - Python 3.11+
 - An [OpenRouter](https://openrouter.ai/) API key
 
-## Setup
+## Quick start
+
+### Windows (one click)
+
+```powershell
+git clone https://github.com/as9coder/wire0.git
+cd wire0
+.\setup.bat
+```
+
+### macOS / Linux
 
 ```bash
+git clone https://github.com/as9coder/wire0.git
+cd wire0
+chmod +x setup.sh && ./setup.sh
+```
+
+### Manual install
+
+```bash
+pip install .
+# or from a clone:
 pip install -e .
 ```
 
 **API key** — prompted on first run, or set anytime with `/key`. Saved to `~/.wire0/config.json`. The `OPENROUTER_API_KEY` environment variable overrides the saved key.
 
+> If you used the old **Agent0** name, Wire0 auto-imports `~/.agent0/config.json` on first run.
+
 ## Run
 
 ```powershell
-.\run.ps1              # Windows — installs editable package and launches (uses Python 3.13 if present)
 wire0                    # workspace = current directory
 wire0 D:\myproject       # workspace = specific path
-wire0 --plain            # skip experimental welcome screen
+wire0 --plain            # skip welcome screen
+```
+
+**Dev launcher** (editable install from clone):
+
+```powershell
+.\run.ps1
 ```
 
 ## CLI
@@ -34,12 +61,15 @@ wire0 --plain            # skip experimental welcome screen
 | `/key sk-or-...` | Set key inline |
 | `/model` | Show current OpenRouter model id |
 | `/model provider/model` | Switch model (any OpenRouter id, saved to config) |
+| `/context` or `/ctx` | Show context usage (limit + filled tokens from OpenRouter) |
 | `/clear` | Reset conversation and cache session |
 | `/exit` | Quit |
 | **Ctrl+C** (idle) | Quit with styled farewell |
 | **Ctrl+C** (agent running) | Interrupt current turn — CLI stays open |
 
 Prompt history is stored in `~/.wire0_history`.
+
+`/context` fetches the model's context limit from OpenRouter's models API and counts current prompt tokens via a minimal usage probe (~1 output token).
 
 ### Environment
 
@@ -81,26 +111,67 @@ Each turn:
 
 The TUI shows a braille spinner while thinking, tool names while working, streamed assistant text, and dim cache stats when available.
 
+## Troubleshooting
+
+### `ModuleNotFoundError: No module named 'wire0'`
+
+The `wire0` command exists but the package install is broken. From the repo folder:
+
+```powershell
+.\repair.bat
+```
+
+Or manually:
+
+```bash
+pip install /path/to/wire0 --force-reinstall
+```
+
+### `wire0` not recognized
+
+Add Python's Scripts folder to your PATH, or run:
+
+```bash
+python -m wire0
+```
+
+## Development
+
+```bash
+pip install -e ".[dev]"
+python -m unittest discover -s tests -v
+```
+
+CI runs tests on Ubuntu and Windows with Python 3.11 and 3.12.
+
 ## Project layout
 
 ```
 wire0/
-  cli.py              # REPL, spinner, Ctrl+C interrupt, farewell
+  cli.py              # REPL, commands, Ctrl+C interrupt
   llm.py              # OpenRouter streaming + tool loop
   tools.py            # Tool implementations and JSON schemas
-  shell.py            # Foreground shell session (merged transcript)
+  context.py          # /context — OpenRouter usage + limits
+  logo.py             # ASCII wordmark
+  shell.py            # Foreground shell session
   bg_shell.py         # Detached background jobs
   cache.py            # OpenRouter prompt caching
-  workspace.py        # Workspace path + file tree for context
-  config.py           # API key in ~/.wire0/config.json
+  workspace.py        # Workspace path + file tree
+  config.py           # API key + model in ~/.wire0/config.json
   spinner.py          # Braille status indicator
-  tui_experimental.py # Optional welcome screen (opt out with --plain or WIRE0_TUI=0)
+  tui_experimental.py # Optional welcome screen
+setup.bat / setup.sh  # One-click install
+repair.bat / repair.ps1  # Fix broken global install
 ```
 
 ## Config on disk
 
 | Path | Contents |
 |------|----------|
-| `~/.wire0/config.json` | OpenRouter API key |
+| `~/.wire0/config.json` | OpenRouter API key and saved model |
 | `~/.wire0/background/` | Background job registry and logs |
 | `~/.wire0_history` | CLI prompt history |
+
+## License
+
+MIT — see [LICENSE](LICENSE).

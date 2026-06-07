@@ -81,15 +81,26 @@ if (-not $python) {
 $ver = Get-PyOutput $python @("-c", "import sys; print('.'.join(map(str, sys.version_info[:3])))")
 Write-Ok "Python $ver"
 
+$site = Get-PyOutput $python @("-c", "import site; print(site.getsitepackages()[0])")
+$scripts = Get-PyOutput $python @("-c", "import sysconfig; print(sysconfig.get_path('scripts'))")
+foreach ($item in Get-ChildItem $site -Force -ErrorAction SilentlyContinue) {
+    if ($item.Name -like '~*') {
+        Remove-Item $item.FullName -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+$exe = Join-Path $scripts "wire0.exe"
+if (Test-Path $exe) { Remove-Item $exe -Force -ErrorAction SilentlyContinue }
+
 Write-Step "Upgrading pip..."
+$prevEap = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
 Invoke-Py $python @("-m", "pip", "install", "--upgrade", "pip", "-q") 2>$null
 Write-Ok "pip ready"
 
 Write-Step "Installing Wire0..."
-Invoke-Py $python @("-m", "pip", "install", $Root, "-q") 2>$null
+Invoke-Py $python @("-m", "pip", "install", $Root, "--force-reinstall", "--no-cache-dir")
+$ErrorActionPreference = $prevEap
 Write-Ok "Wire0 installed"
-
-$scripts = Get-PyOutput $python @("-c", "import sysconfig; print(sysconfig.get_path('scripts'))")
 
 Write-Host ""
 Write-Host "  Wire0 is ready" -ForegroundColor $Orange
