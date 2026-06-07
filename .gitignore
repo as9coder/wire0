@@ -4,6 +4,7 @@ dist/
 build/
 *.whl
 .venv/
+run.ps1
 .env
 .env.*
 !.env.example

@@ -54,12 +54,6 @@ wire0 D:\myproject       # workspace = specific path
 wire0 --plain            # skip welcome screen
 ```
 
-**Dev launcher** (editable install from clone):
-
-```powershell
-.\run.ps1
-```
-
 ## CLI
 
 | Input | Action |
